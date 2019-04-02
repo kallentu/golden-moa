@@ -1,0 +1,36 @@
+package gw2;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+public class GW2SpidyParser {
+    public static void allItemsThresholdOneSilverToFile() throws IOException {
+        // Clear input file ready for writing
+        Path file = Paths.get("input.txt");
+        Files.deleteIfExists(file);
+        Files.createFile(file);
+
+        List<String> fileLines = new ArrayList<>();
+
+        // Retrieve all items to round up offer and round down selling.
+        // This will cause some error with calculation, but can be treated as rounding as we will earn more.
+        JSONArray allItemsJson = GW2SpidyAPI.getAllItemsJSON();
+        for (int i = 0; i < allItemsJson.length(); i++) {
+            JSONObject item = allItemsJson.getJSONObject(i);
+            String itemLine = item.getInt("max_offer_unit_price") + "\t" +
+                    item.getInt("min_sale_unit_price") + "\t" +
+                    item.getInt("offer_availability") + "\t" +
+                    item.getInt("sale_availability") + "\n";
+            fileLines.add(itemLine);
+        }
+
+        Files.write(file, fileLines);
+    }
+}
