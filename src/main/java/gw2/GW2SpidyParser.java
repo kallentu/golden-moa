@@ -24,8 +24,14 @@ public class GW2SpidyParser {
         JSONArray allItemsJson = GW2SpidyAPI.getAllItemsJSON();
         for (int i = 0; i < allItemsJson.length(); i++) {
             JSONObject item = allItemsJson.getJSONObject(i);
-            String itemLine = item.getInt("max_offer_unit_price") + "\t" +
-                    item.getInt("min_sale_unit_price") + "\t" +
+
+            // Round up to nearest 100
+            int maxOfferUnitPrice = (item.getInt("max_offer_unit_price") + 100) / 100 * 100;
+            // Round down to nearest 100
+            int minSaleUnitPrice = (item.getInt("min_sale_unit_price") - 100) / 100 * 100;
+
+            String itemLine = maxOfferUnitPrice + "\t" +
+                    minSaleUnitPrice + "\t" +
                     item.getInt("offer_availability") + "\t" +
                     item.getInt("sale_availability") + "\n";
             fileLines.add(itemLine);
