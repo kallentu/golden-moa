@@ -159,8 +159,8 @@ public class GW2SpidyAPI {
      * }
      * }
      */
-    public static JSONObject getRecipeDataJSON(int recipeId) throws IOException {
-        return sendRequest("recipes/" + recipeId).getJSONObject(RESULT_KEY);
+    public static JSONObject getRecipeDataJSON(int dataId) throws IOException {
+        return sendRequest("recipe/" + dataId).getJSONObject(RESULT_KEY);
     }
 
     /** Get the current gem/gold conversion rate. */
