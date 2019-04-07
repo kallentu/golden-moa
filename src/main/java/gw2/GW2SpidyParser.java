@@ -11,9 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GW2SpidyParser {
-    public static void allItemsThresholdOneSilverToFile() throws IOException {
+    /**
+     * Each row of the file output will look like such:
+     * name    sellPrice    buyPrice    sellCount    buyCount
+     */
+    public static void allItemsToFile() throws IOException {
         // Clear input file ready for writing
-        Path file = Paths.get("input.txt");
+        Path file = Paths.get("allitemsdataset.txt");
         Files.deleteIfExists(file);
         Files.createFile(file);
 
@@ -24,13 +28,15 @@ public class GW2SpidyParser {
         JSONArray allItemsJson = GW2SpidyAPI.getAllItemsJSON();
         for (int i = 0; i < allItemsJson.length(); i++) {
             JSONObject item = allItemsJson.getJSONObject(i);
+            String name = item.getString("name");
 
             // Round up to nearest 100
             int maxOfferUnitPrice = (item.getInt("max_offer_unit_price") + 100) / 100 * 100;
             // Round down to nearest 100
             int minSaleUnitPrice = (item.getInt("min_sale_unit_price") - 100) / 100 * 100;
 
-            String itemLine = maxOfferUnitPrice + "\t" +
+            String itemLine = name + "\t" +
+                    maxOfferUnitPrice + "\t" +
                     minSaleUnitPrice + "\t" +
                     item.getInt("offer_availability") + "\t" +
                     item.getInt("sale_availability") + "\n";
