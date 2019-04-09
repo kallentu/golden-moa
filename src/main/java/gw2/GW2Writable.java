@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GW2Writable implements WritableComparable<GW2Writable> {
+    private static String ITEM_NAME_ERROR = "item_name_unavailable";
+
     private Text itemName;
     private IntWritable sellPrice;
     private IntWritable buyPrice;
@@ -18,11 +20,11 @@ public class GW2Writable implements WritableComparable<GW2Writable> {
     private IntWritable buyCount;
 
     public GW2Writable() {
-        setValues(new Text(),
-                new IntWritable(),
-                new IntWritable(),
-                new IntWritable(),
-                new IntWritable());
+        setValues(new Text(ITEM_NAME_ERROR),
+                new IntWritable(0),
+                new IntWritable(0),
+                new IntWritable(0),
+                new IntWritable(0));
     }
 
     public GW2Writable(String itemName,

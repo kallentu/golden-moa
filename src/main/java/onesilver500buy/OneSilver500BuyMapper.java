@@ -6,13 +6,15 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
+import java.io.IOException;
+
 public class OneSilver500BuyMapper extends Mapper<LongWritable, Text, IntWritable, GW2Writable> {
     /**
      * Takes data set information and maps to key-value:
      * < silver-buy-price-lowerbound, GW2Writable >
      */
     @Override
-    public void map(LongWritable key, Text input, Context context) {
+    public void map(LongWritable key, Text input, Context context) throws IOException, InterruptedException {
         String line = input.toString();
         String[] itemDataRow = line.split("\t");
 
@@ -29,11 +31,7 @@ public class OneSilver500BuyMapper extends Mapper<LongWritable, Text, IntWritabl
                 sellCount,
                 buyCount);
 
-        try {
-            context.write(new IntWritable(buyPrice), gw2Writable);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        context.write(new IntWritable(buyPrice), gw2Writable);
     }
 
 }
