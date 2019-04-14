@@ -68,6 +68,10 @@ public class GW2Writable implements WritableComparable<GW2Writable> {
 
     @Override
     public String toString() {
+        if (itemName.toString().equals(ITEM_NAME_ERROR)) {
+            return "No GW2Writable available.";
+        }
+
         return "Name: " + itemName + " " +
                 "Sell Price: " + sellPrice + " " +
                 "Buy Price: " + buyPrice + " " +

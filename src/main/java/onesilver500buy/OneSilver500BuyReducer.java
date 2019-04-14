@@ -31,6 +31,7 @@ public class OneSilver500BuyReducer extends Reducer<IntWritable, GW2Writable, In
             double itemProfit = getItemProfit(item);
             if (itemProfit > maxProfit) {
                 maxProfit = itemProfit;
+                maxProfitItem = item;
             }
         }
 
