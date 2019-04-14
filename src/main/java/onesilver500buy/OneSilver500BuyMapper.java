@@ -18,20 +18,22 @@ public class OneSilver500BuyMapper extends Mapper<LongWritable, Text, IntWritabl
         String line = input.toString();
         String[] itemDataRow = line.split("\t");
 
-        String itemName = itemDataRow[0];
-        int sellPrice = Integer.parseInt(itemDataRow[1]);
-        int buyPrice = Integer.parseInt(itemDataRow[2]);
-        int sellCount = Integer.parseInt(itemDataRow[3]);
-        int buyCount = Integer.parseInt(itemDataRow[4]);
+        if (itemDataRow.length == 5) {
+            String itemName = itemDataRow[0];
+            int sellPrice = Integer.parseInt(itemDataRow[1]);
+            int buyPrice = Integer.parseInt(itemDataRow[2]);
+            int sellCount = Integer.parseInt(itemDataRow[3]);
+            int buyCount = Integer.parseInt(itemDataRow[4]);
 
-        GW2Writable gw2Writable = new GW2Writable(
-                itemName,
-                sellPrice,
-                buyPrice,
-                sellCount,
-                buyCount);
+            GW2Writable gw2Writable = new GW2Writable(
+                    itemName,
+                    sellPrice,
+                    buyPrice,
+                    sellCount,
+                    buyCount);
 
-        context.write(new IntWritable(buyPrice), gw2Writable);
+            context.write(new IntWritable(buyPrice), gw2Writable);
+        }
     }
 
 }
