@@ -1,13 +1,12 @@
 package onesilver500buy;
 
 import gw2.GW2Writable;
-import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
 
-public class OneSilver500BuyReducer extends Reducer<IntWritable, GW2Writable, DoubleWritable, GW2Writable> {
+public class OneSilver500BuyReducer extends Reducer<IntWritable, GW2Writable, IntWritable, GW2Writable> {
     private static final double LISTING_FEE_PERCENT = 0.05;
     private static final double TAX_FEE_PERCENT = 0.1;
 
@@ -38,7 +37,8 @@ public class OneSilver500BuyReducer extends Reducer<IntWritable, GW2Writable, Do
 
         // Profitable item in this margin
         if (maxProfitItem != null) {
-            context.write(new DoubleWritable(maxProfit), maxProfitItem);
+            // Truncation to int, simplifies data.
+            context.write(new IntWritable((int) maxProfit), maxProfitItem);
         }
     }
 
