@@ -18,6 +18,7 @@ public class OneSilver500BuyMapper extends Mapper<LongWritable, Text, IntWritabl
         String line = input.toString();
         String[] itemDataRow = line.split("\t");
 
+        // Check that the data row has all the correct information, no less.
         if (itemDataRow.length == 5) {
             String itemName = itemDataRow[0];
             int sellPrice = Integer.parseInt(itemDataRow[1]);

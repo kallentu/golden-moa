@@ -67,6 +67,15 @@ public class GW2Writable implements WritableComparable<GW2Writable> {
     public Integer getBuyCountInt() { return Integer.parseInt(buyCount.toString()); }
 
     @Override
+    public String toString() {
+        return "Name: " + itemName + " " +
+                "Sell Price: " + sellPrice + " " +
+                "Buy Price: " + buyPrice + " " +
+                "Sell Count: " + sellCount + " " +
+                "Buy Count: " + buyCount;
+    }
+
+    @Override
     public void write(DataOutput dataOutput) throws IOException {
         itemName.write(dataOutput);
         sellPrice.write(dataOutput);
