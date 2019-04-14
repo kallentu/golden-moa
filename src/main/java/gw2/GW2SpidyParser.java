@@ -15,7 +15,7 @@ public class GW2SpidyParser {
      * Each row of the file output will look like such:
      * name    sellPrice    buyPrice    sellCount    buyCount
      */
-    public static void allItemsToFile() throws IOException {
+    public static void addAllItemsToFile() throws IOException {
         // Clear input file ready for writing
         Path file = Paths.get("allitemsdataset.txt");
         Files.deleteIfExists(file);
@@ -34,6 +34,7 @@ public class GW2SpidyParser {
             int maxOfferUnitPrice = (item.getInt("max_offer_unit_price") + 100) / 100 * 100;
             // Round down to nearest 100
             int minSaleUnitPrice = (item.getInt("min_sale_unit_price") - 100) / 100 * 100;
+            minSaleUnitPrice = minSaleUnitPrice > 0 ? minSaleUnitPrice : 0;
 
             String itemLine = name + "\t" +
                     maxOfferUnitPrice + "\t" +

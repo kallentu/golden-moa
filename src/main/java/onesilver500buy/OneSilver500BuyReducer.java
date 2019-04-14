@@ -18,7 +18,7 @@ public class OneSilver500BuyReducer extends Reducer<IntWritable, GW2Writable, In
      */
     @Override
     public void reduce(IntWritable key, Iterable<GW2Writable> items, Context context) throws IOException, InterruptedException {
-        GW2Writable maxProfitItem = new GW2Writable();
+        GW2Writable maxProfitItem = null;
         double maxProfit = 0;
 
         for (GW2Writable item : items) {
@@ -31,10 +31,15 @@ public class OneSilver500BuyReducer extends Reducer<IntWritable, GW2Writable, In
             double itemProfit = getItemProfit(item);
             if (itemProfit > maxProfit) {
                 maxProfit = itemProfit;
+                maxProfitItem = item;
             }
         }
 
-        context.write(key, maxProfitItem);
+        // Profitable item in this margin
+        if (maxProfitItem != null) {
+            // Truncation to int, simplifies data.
+            context.write(new IntWritable((int) maxProfit), maxProfitItem);
+        }
     }
 
     private double getItemProfit(GW2Writable item) {

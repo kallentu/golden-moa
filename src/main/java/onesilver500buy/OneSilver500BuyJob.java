@@ -9,6 +9,14 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 public class OneSilver500BuyJob {
+    /**
+     * Mapper categorizes by buy price because we are looking for items at each bracket.
+     * Meanwhile, reducer provides the profit information since the original mapper buy price is not
+     * as important for the final result.
+     *
+     * Example line of resulting MapReduce:
+     * 246  Name: Rampager's Rogue Pants of Divinity Sell Price: 1300 Buy Price: 2000 Sell Count: 746 Buy Count: 859
+     */
     public static void main(String[] args) throws Exception {
         Configuration config = new Configuration();
         Job job = Job.getInstance(config, "OneSilver500BuyJob");

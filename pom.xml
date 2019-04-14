@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.kallen.hadoop</groupId>
-    <artifactId>gw2-trading-reduce</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>golden-moa</artifactId>
+    <version>1.0</version>
     <build>
         <plugins>
             <plugin>
@@ -16,6 +16,25 @@
                     <source>8</source>
                     <target>8</target>
                 </configuration>
+            </plugin>
+            <!-- Shade in JSON for running the dataset generators. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.3</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>org.json:json</includes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
