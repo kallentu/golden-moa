@@ -1,12 +1,13 @@
 package onesilver500buy;
 
 import gw2.GW2Writable;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
 
-public class OneSilver500BuyReducer extends Reducer<IntWritable, GW2Writable, IntWritable, GW2Writable> {
+public class OneSilver500BuyReducer extends Reducer<IntWritable, GW2Writable, DoubleWritable, GW2Writable> {
     private static final double LISTING_FEE_PERCENT = 0.05;
     private static final double TAX_FEE_PERCENT = 0.1;
 
@@ -18,7 +19,7 @@ public class OneSilver500BuyReducer extends Reducer<IntWritable, GW2Writable, In
      */
     @Override
     public void reduce(IntWritable key, Iterable<GW2Writable> items, Context context) throws IOException, InterruptedException {
-        GW2Writable maxProfitItem = new GW2Writable();
+        GW2Writable maxProfitItem = null;
         double maxProfit = 0;
 
         for (GW2Writable item : items) {
@@ -35,7 +36,10 @@ public class OneSilver500BuyReducer extends Reducer<IntWritable, GW2Writable, In
             }
         }
 
-        context.write(key, maxProfitItem);
+        // Profitable item in this margin
+        if (maxProfitItem != null) {
+            context.write(new DoubleWritable(maxProfit), maxProfitItem);
+        }
     }
 
     private double getItemProfit(GW2Writable item) {
