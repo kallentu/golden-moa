@@ -30,15 +30,20 @@ public class GW2SpidyParser {
             JSONObject item = allItemsJson.getJSONObject(i);
             String name = item.getString("name");
 
-            // Round up to nearest 100
-            int maxOfferUnitPrice = (item.getInt("max_offer_unit_price") + 100) / 100 * 100;
             // Round down to nearest 100
-            int minSaleUnitPrice = (item.getInt("min_sale_unit_price") - 100) / 100 * 100;
-            minSaleUnitPrice = minSaleUnitPrice > 0 ? minSaleUnitPrice : 0;
+            // Amount that people are selling for on the market, can be immediately purchased
+            // and always higher than buying price.
+            int sellingUnitPrice = (item.getInt("min_sale_unit_price") - 100) / 100 * 100;
+            sellingUnitPrice = sellingUnitPrice > 0 ? sellingUnitPrice : 0;
+
+            // Round up to nearest 100
+            // Amount that buyers want to buy for, can be immediately sold to
+            // and usually lower than selling price.
+            int buyingUnitPrice = (item.getInt("max_offer_unit_price") + 100) / 100 * 100;
 
             String itemLine = name + "\t" +
-                    maxOfferUnitPrice + "\t" +
-                    minSaleUnitPrice + "\t" +
+                    sellingUnitPrice + "\t" +
+                    buyingUnitPrice + "\t" +
                     item.getInt("offer_availability") + "\t" +
                     item.getInt("sale_availability") + "\n";
             fileLines.add(itemLine);

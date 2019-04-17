@@ -49,14 +49,14 @@ _Prerequsite(s):_ Installed Hadoop MapReduce, started all services.
 Result from `cat output/part-r-00000 | sort -n -k1 | head -n10`. These are lowest profitable items with buy counts over 
 500 and mapped into 1 silver buckets.
 ```
-246    Name: Rampager's Rogue Pants of Divinity Sell Price: 1300 Buy Price: 2000 Sell Count: 746 Buy Count: 859
-449    Name: Ruby Platinum Earring Sell Price: 1200 Buy Price: 2200 Sell Count: 467 Buy Count: 571
-450    Name: Rampager's Iron Shield of the Geomancer Sell Price: 1400 Buy Price: 2600 Sell Count: 31 Buy Count: 740
-552    Name: Mighty Bronze Greatsword Sell Price: 1300 Buy Price: 3800 Sell Count: 303 Buy Count: 553
-576    Name: Valkyrie Masquerade Leggings Sell Price: 1500 Buy Price: 6000 Sell Count: 272 Buy Count: 699
-601    Name: Berserker's Seer Mantle of Vampirism Sell Price: 2300 Buy Price: 3600 Sell Count: 439 Buy Count: 1354
-656    Name: Rampager's Gladiator Helm Sell Price: 1600 Buy Price: 1900 Sell Count: 339 Buy Count: 704
-713    Name: Carnelian Silver Amulet Sell Price: 1700 Buy Price: 7200 Sell Count: 430 Buy Count: 732
-766    Name: Penetrating Krytan Greatsword of the Night Sell Price: 1600 Buy Price: 16300 Sell Count: 83 Buy Count: 594
-985    Name: Rejuvenating Steel Plated Inscription Sell Price: 2700 Buy Price: 5100 Sell Count: 785 Buy Count: 1310
+246    Name: Rampager's Rogue Pants of Divinity Sell Price: 2000 Buy Price: 1300 Sell Count: 746 Buy Count: 859
+449    Name: Ruby Platinum Earring Sell Price: 2200 Buy Price: 1200 Sell Count: 467 Buy Count: 571
+450    Name: Rampager's Iron Shield of the Geomancer Sell Price: 2600 Buy Price: 1400 Sell Count: 31 Buy Count: 740
+552    Name: Mighty Bronze Greatsword Sell Price: 3800 Buy Price: 1300 Sell Count: 303 Buy Count: 553
+576    Name: Valkyrie Masquerade Leggings Sell Price: 6000 Buy Price: 1500 Sell Count: 272 Buy Count: 699
+601    Name: Berserker's Seer Mantle of Vampirism Sell Price: 3600 Buy Price: 2300 Sell Count: 439 Buy Count: 1354
+656    Name: Rampager's Gladiator Helm Sell Price: 1900 Buy Price: 1600 Sell Count: 339 Buy Count: 704
+713    Name: Carnelian Silver Amulet Sell Price: 7200 Buy Price: 1700 Sell Count: 430 Buy Count: 732
+766    Name: Penetrating Krytan Greatsword of the Night Sell Price: 16300 Buy Price: 1600 Sell Count: 83 Buy Count: 594
+985    Name: Rejuvenating Steel Plated Inscription Sell Price: 5100 Buy Price: 2700 Sell Count: 785 Buy Count: 1310
 ```
