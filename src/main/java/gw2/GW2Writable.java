@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GW2Writable implements WritableComparable<GW2Writable> {
+    private static final double LISTING_FEE_PERCENT = 0.05;
+    private static final double TAX_FEE_PERCENT = 0.1;
     private static String ITEM_NAME_ERROR = "item_name_unavailable";
 
     private Text itemName;
@@ -65,6 +67,17 @@ public class GW2Writable implements WritableComparable<GW2Writable> {
 
     public IntWritable getBuyCount() { return buyCount; }
     public Integer getBuyCountInt() { return Integer.parseInt(buyCount.toString()); }
+
+    /** Gets the current profit with reductions from taxes and listing fees. */
+    public double getItemProfit() {
+        double listingFee = getSellPriceInt() * LISTING_FEE_PERCENT;
+        double taxFee = getSellPriceInt() * TAX_FEE_PERCENT;
+
+        return getSellPriceInt() -
+                getBuyCountInt() -
+                listingFee -
+                taxFee;
+    }
 
     @Override
     public String toString() {
