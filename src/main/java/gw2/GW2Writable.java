@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Custom WritableComparable for GW2 item data. */
 public class GW2Writable implements WritableComparable<GW2Writable> {
     private static final double LISTING_FEE_PERCENT = 0.05;
     private static final double TAX_FEE_PERCENT = 0.1;
@@ -68,7 +69,13 @@ public class GW2Writable implements WritableComparable<GW2Writable> {
     public IntWritable getBuyCount() { return buyCount; }
     public Integer getBuyCountInt() { return Integer.parseInt(buyCount.toString()); }
 
-    /** Gets the current profit with reductions from taxes and listing fees. */
+    /**
+     * Gets the current profit with reductions from taxes and listing fees.
+     *
+     * Algorithm for calculating profit is:
+     * Bell price - buy price - 10% of sell price - 5% of sell price
+     * <p>
+     */
     public double getItemProfit() {
         double listingFee = getSellPriceInt() * LISTING_FEE_PERCENT;
         double taxFee = getSellPriceInt() * TAX_FEE_PERCENT;

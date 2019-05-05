@@ -1,6 +1,3 @@
-package onesilver500buy;
-
-import gw2.GW2SpidyParser;
 import gw2.GW2Writable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -15,10 +12,11 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
 
-public class OneSilver500Buy {
+/** MapReduce job to generate the most profitable/flippable items on the GW2 Trading Post. */
+public class GW2Job {
     private static int MIN_BUY_PRICE = 500;
 
-    public static class OneSilver500BuyMapper extends Mapper<LongWritable, Text, IntWritable, GW2Writable> {
+    public static class GW2Mapper extends Mapper<LongWritable, Text, IntWritable, GW2Writable> {
         /**
          * Takes data set information and maps to key-value:
          * < silver-buy-price-lowerbound, GW2Writable >
@@ -49,7 +47,7 @@ public class OneSilver500Buy {
 
     }
 
-    public static class OneSilver500BuyReducer extends Reducer<IntWritable, GW2Writable, IntWritable, GW2Writable> {
+    public static class GW2Reducer extends Reducer<IntWritable, GW2Writable, IntWritable, GW2Writable> {
         /** Additional filter for max profit with a certain number of buy listings. */
         @Override
         public void reduce(IntWritable key, Iterable<GW2Writable> items, Context context) throws IOException, InterruptedException {
@@ -86,37 +84,32 @@ public class OneSilver500Buy {
      *
      * Example line of resulting MapReduce:
      * 246  Name: Rampager's Rogue Pants of Divinity Sell Price: 1300 Buy Price: 2000 Sell Count: 746 Buy Count: 859
+     *
+     * Usage: hadoop jar target/golden-moa-1.0.jar GW2Job INPUT OUTPUT [--threshold THRESHOLD] [--minbuycount MINBUY]
      */
     public static void main(String[] args) throws Exception {
         Configuration config = new Configuration();
-        Job job = Job.getInstance(config, "OneSilver500BuyJob");
-        job.setJarByClass(OneSilver500Buy.class);
-        job.setMapperClass(OneSilver500BuyMapper.class);
-        job.setCombinerClass(OneSilver500BuyReducer.class);
-        job.setReducerClass(OneSilver500BuyReducer.class);
+        Job job = Job.getInstance(config, "GW2Job");
+        job.setJarByClass(GW2Job.class);
+        job.setMapperClass(GW2Mapper.class);
+        job.setCombinerClass(GW2Reducer.class);
+        job.setReducerClass(GW2Reducer.class);
         job.setOutputKeyClass(IntWritable.class);
         job.setOutputValueClass(GW2Writable.class);
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
-        // Additional arguments
-        // [--threshold THRESHOLD]
-        // [--minbuy MINBUY]
+        // Additional optional arguments
+        // [--minbuycount MINBUY]   default: 500
         if (args.length > 2) {
             for (int i = 2; i < args.length; i++) {
                 String arg = args[i];
-                if (arg.equals("--threshold")) {
-
-                } else if (arg.equals("--minbuy")) {
-
+                if (arg.equals("--minbuycount")) {
+                    MIN_BUY_PRICE = Integer.valueOf(args[++i]);
                 }
             }
         }
-
-        // Creates data set of GW2 items
-        GW2SpidyParser gw2SpidyParser
-        GW2SpidyParser.addAllItemsToFile();
 
         job.waitForCompletion(true);
     }
