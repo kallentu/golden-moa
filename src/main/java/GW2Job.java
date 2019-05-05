@@ -1,5 +1,6 @@
 package onesilver500buy;
 
+import gw2.GW2SpidyParser;
 import gw2.GW2Writable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -15,6 +16,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import java.io.IOException;
 
 public class OneSilver500Buy {
+    private static int MIN_BUY_PRICE = 500;
 
     public static class OneSilver500BuyMapper extends Mapper<LongWritable, Text, IntWritable, GW2Writable> {
         /**
@@ -48,12 +50,7 @@ public class OneSilver500Buy {
     }
 
     public static class OneSilver500BuyReducer extends Reducer<IntWritable, GW2Writable, IntWritable, GW2Writable> {
-        /**
-         * Algorithm for calculating profit is:
-         * Bell price - buy price - 10% of sell price - 5% of sell price
-         * <p>
-         * For this particular set, we want over 500 buy counts and max profit with no other conditions.
-         */
+        /** Additional filter for max profit with a certain number of buy listings. */
         @Override
         public void reduce(IntWritable key, Iterable<GW2Writable> items, Context context) throws IOException, InterruptedException {
             GW2Writable maxProfitItem = null;
@@ -61,8 +58,8 @@ public class OneSilver500Buy {
 
             for (GW2Writable item : items) {
 
-                // With this reduce, want fast moving items that have demand at a 500 buy threshold.
-                if (item.getBuyCountInt() < 500) {
+                // With this reduce, want fast moving items that have demand at a set buy threshold.
+                if (item.getBuyCountInt() < MIN_BUY_PRICE) {
                     continue;
                 }
 
@@ -102,6 +99,25 @@ public class OneSilver500Buy {
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        // Additional arguments
+        // [--threshold THRESHOLD]
+        // [--minbuy MINBUY]
+        if (args.length > 2) {
+            for (int i = 2; i < args.length; i++) {
+                String arg = args[i];
+                if (arg.equals("--threshold")) {
+
+                } else if (arg.equals("--minbuy")) {
+
+                }
+            }
+        }
+
+        // Creates data set of GW2 items
+        GW2SpidyParser gw2SpidyParser
+        GW2SpidyParser.addAllItemsToFile();
+
         job.waitForCompletion(true);
     }
 }
