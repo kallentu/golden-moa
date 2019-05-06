@@ -6,15 +6,17 @@ This Hadoop MapReduce calculates the most profitable items to flip in GW2.
 
 _Prerequsite(s):_ Installed Hadoop MapReduce, started all services.
 
-1.  In the main folder where `pom.xml` is located, we want to create a jar file.
+1.  Create a jar file by running the following in the main folder where `pom.xml` is located.
     ```
     mvn clean install
     ```
     This creates a jar with the relative path `target/golden-moa-1.0.jar`
 
-2.  We will then generate our dataset from current time trading post data as such:
+2.  Generate our dataset from current trading post data. Optional arguments: `--threshold`.
     ```
-    hadoop jar target/golden-moa-1.0.jar gw2.GW2Main
+    // Usage: hadoop jar JAR gw2.GW2SpidyMain [--threshold THRESHOLD]
+    // [--threshold THRESHOLD]  default: 100 
+    hadoop jar target/golden-moa-1.0.jar gw2.GW2SpidyMain
     ```
     This generates `allitemsdataset.txt`.
     
@@ -27,9 +29,11 @@ _Prerequsite(s):_ Installed Hadoop MapReduce, started all services.
     hadoop fs -ls ~/input/
     ```
 
-4.  Run MapReduce.
+4.  Run MapReduce. Optional arguments: `--minbuycount`.
     ```
-    hadoop jar target/golden-moa-1.0.jar onesilver500buy.OneSilver500BuyJob ~/input/ ~/output/
+    // Usage: hadoop jar JAR GW2Job INPUT OUTPUT [--minbuycount MINBUY] 
+    // [--minbuycount MINBUY]   default: 500
+    hadoop jar target/golden-moa-1.0.jar GW2Job ~/input/ ~/output/
     ```
     
 5.  View output of the MapReduce.
@@ -47,7 +51,7 @@ _Prerequsite(s):_ Installed Hadoop MapReduce, started all services.
 ## Example MapReduce Result
 
 Result from `cat output/part-r-00000 | sort -n -k1 | head -n10`. These are lowest profitable items with buy counts over 
-500 and mapped into 1 silver buckets.
+500 and mapped into 1 silver buckets which are the default values.
 ```
 246    Name: Rampager's Rogue Pants of Divinity Sell Price: 2000 Buy Price: 1300 Sell Count: 746 Buy Count: 859
 449    Name: Ruby Platinum Earring Sell Price: 2200 Buy Price: 1200 Sell Count: 467 Buy Count: 571

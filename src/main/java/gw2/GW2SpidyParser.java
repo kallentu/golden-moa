@@ -10,12 +10,26 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+/** Parses API data and formats them into a dataset readable for MapReducing*/
 public class GW2SpidyParser {
+    // Rounded up/down to this value
+    private int roundingBound;
+
+    public GW2SpidyParser() {
+        this(100);
+    }
+
+    public GW2SpidyParser(int roundingBound) {
+        this.roundingBound = roundingBound;
+    }
+
+    public void setRoundingBound(int newRoundingBound) { roundingBound = newRoundingBound; }
+
     /**
      * Each row of the file output will look like such:
      * name    sellPrice    buyPrice    sellCount    buyCount
      */
-    public static void addAllItemsToFile() throws IOException {
+    public void createAllItemsDataSetFile() throws IOException {
         // Clear input file ready for writing
         Path file = Paths.get("allitemsdataset.txt");
         Files.deleteIfExists(file);
@@ -30,16 +44,16 @@ public class GW2SpidyParser {
             JSONObject item = allItemsJson.getJSONObject(i);
             String name = item.getString("name");
 
-            // Round down to nearest 100
+            // Round down to nearest roundingBound value.
             // Amount that people are selling for on the market, can be immediately purchased
             // and always higher than buying price.
-            int sellingUnitPrice = (item.getInt("min_sale_unit_price") - 100) / 100 * 100;
+            int sellingUnitPrice = (item.getInt("min_sale_unit_price") - roundingBound) / roundingBound * roundingBound;
             sellingUnitPrice = sellingUnitPrice > 0 ? sellingUnitPrice : 0;
 
-            // Round up to nearest 100
+            // Round up to nearest roundingBound value.
             // Amount that buyers want to buy for, can be immediately sold to
             // and usually lower than selling price.
-            int buyingUnitPrice = (item.getInt("max_offer_unit_price") + 100) / 100 * 100;
+            int buyingUnitPrice = (item.getInt("max_offer_unit_price") + roundingBound) / roundingBound * roundingBound;
 
             String itemLine = name + "\t" +
                     sellingUnitPrice + "\t" +
