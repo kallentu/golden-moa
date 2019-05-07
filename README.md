@@ -2,6 +2,41 @@
 
 This Hadoop MapReduce calculates the most profitable items to flip in GW2.
 
+## Commands
+
+### GW2SpidyMain
+
+#### Description
+
+Generates a dataset called `allitemsdataset.txt` in folder of `pom.xml` using GW2Spidy API requests and some additional
+parsing. 
+
+#### Usage
+
+```
+hadoop jar JAR gw2.GW2SpidyMain [OPTIONS]
+```
+
+| Name             | Default       | Description                                                                 |
+| ---------------- | ------------- | --------------------------------------------------------------------------- |
+| `--threshold`    | 100           | Sets the bucket threshold by copper amount (eg. 100 is 100 copper/1 silver) |
+
+### GW2Job
+
+#### Description
+
+Calculates most profitable GW2 items based on bucket threshold and margins. Requires `allitemsdataset.txt`.
+
+#### Usage
+
+```
+hadoop jar JAR GW2Job INPUT OUTPUT [OPTIONS]
+```
+
+| Name               | Default       | Description                                                               |
+| ------------------ | ------------- | ------------------------------------------------------------------------- |
+| `--minbuycount`    | 500           | Sets the minimum buy listings required by each item, ensures item demand. |
+
 ## How to Run
 
 _Prerequsite(s):_ Installed Hadoop MapReduce, started all services.
@@ -12,10 +47,8 @@ _Prerequsite(s):_ Installed Hadoop MapReduce, started all services.
     ```
     This creates a jar with the relative path `target/golden-moa-1.0.jar`
 
-2.  Generate our dataset from current trading post data. Optional arguments: `--threshold`.
+2.  Generate our dataset from current trading post data. See section above for command usage.
     ```
-    // Usage: hadoop jar JAR gw2.GW2SpidyMain [--threshold THRESHOLD]
-    // [--threshold THRESHOLD]  default: 100 
     hadoop jar target/golden-moa-1.0.jar gw2.GW2SpidyMain
     ```
     This generates `allitemsdataset.txt`.
@@ -29,10 +62,8 @@ _Prerequsite(s):_ Installed Hadoop MapReduce, started all services.
     hadoop fs -ls ~/input/
     ```
 
-4.  Run MapReduce. Optional arguments: `--minbuycount`.
+4.  Run MapReduce. See section above for command usage.
     ```
-    // Usage: hadoop jar JAR GW2Job INPUT OUTPUT [--minbuycount MINBUY] 
-    // [--minbuycount MINBUY]   default: 500
     hadoop jar target/golden-moa-1.0.jar GW2Job ~/input/ ~/output/
     ```
     
