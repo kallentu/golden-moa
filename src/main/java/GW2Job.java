@@ -14,12 +14,13 @@ import java.io.IOException;
 
 /** MapReduce job to generate the most profitable/flippable items on the GW2 Trading Post. */
 public class GW2Job {
-    private static int MIN_BUY_PRICE = 500;
+    // Minimum buy listings count, ensures item is in demand.
+    private static int MIN_BUY_COUNT = 500;
 
     public static class GW2Mapper extends Mapper<LongWritable, Text, IntWritable, GW2Writable> {
         /**
          * Takes data set information and maps to key-value:
-         * < silver-buy-price-lowerbound, GW2Writable >
+         * < buy-price-lowerbound, GW2Writable >
          */
         @Override
         public void map(LongWritable key, Text input, Context context) throws IOException, InterruptedException {
@@ -57,7 +58,7 @@ public class GW2Job {
             for (GW2Writable item : items) {
 
                 // With this reduce, want fast moving items that have demand at a set buy threshold.
-                if (item.getBuyCountInt() < MIN_BUY_PRICE) {
+                if (item.getBuyCountInt() < MIN_BUY_COUNT) {
                     continue;
                 }
 
@@ -106,7 +107,7 @@ public class GW2Job {
             for (int i = 2; i < args.length; i++) {
                 String arg = args[i];
                 if (arg.equals("--minbuycount")) {
-                    MIN_BUY_PRICE = Integer.valueOf(args[++i]);
+                    MIN_BUY_COUNT = Integer.valueOf(args[++i]);
                 }
             }
         }

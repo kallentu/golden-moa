@@ -12,7 +12,8 @@ import java.util.List;
 
 /** Parses API data and formats them into a dataset readable for MapReducing*/
 public class GW2SpidyParser {
-    // Rounded up/down to this value
+    // Rounded up/down to this copper bucket.
+    // eg. 100 is 1 silver or 100 copper.
     private int roundingBound;
 
     public GW2SpidyParser() {
