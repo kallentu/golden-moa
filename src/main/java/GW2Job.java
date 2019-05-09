@@ -1,29 +1,40 @@
 import gw2.GW2Writable;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
-import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapred.FileInputFormat;
+import org.apache.hadoop.mapred.FileOutputFormat;
+import org.apache.hadoop.mapred.JobClient;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.Reducer;
+import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.mapred.Mapper;
+import org.apache.hadoop.mapred.TextInputFormat;
+import org.apache.hadoop.mapred.TextOutputFormat;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 /** MapReduce job to generate the most profitable/flippable items on the GW2 Trading Post. */
-public class GW2Job {
-    // Minimum buy listings count, ensures item is in demand.
-    private static int MIN_BUY_COUNT = 500;
+public class GW2Job extends Configured implements Tool {
+    private static final String MIN_BUY_COUNT_CONF = "golden-moa.minbuycount";
 
-    public static class GW2Mapper extends Mapper<LongWritable, Text, IntWritable, GW2Writable> {
+    public static class GW2Mapper implements Mapper<LongWritable, Text, IntWritable, GW2Writable> {
+        @Override
+        public void configure(JobConf jobConf) { }
+
         /**
          * Takes data set information and maps to key-value:
          * < buy-price-lowerbound, GW2Writable >
          */
         @Override
-        public void map(LongWritable key, Text input, Context context) throws IOException, InterruptedException {
+        public void map(LongWritable key, Text input, OutputCollector<IntWritable, GW2Writable> output, Reporter reporter) throws IOException {
             String line = input.toString();
             String[] itemDataRow = line.split("\t");
 
@@ -42,23 +53,34 @@ public class GW2Job {
                         sellCount,
                         buyCount);
 
-                context.write(new IntWritable(buyPrice), gw2Writable);
+                output.collect(new IntWritable(buyPrice), gw2Writable);
             }
         }
 
+        @Override
+        public void close() throws IOException { }
     }
 
-    public static class GW2Reducer extends Reducer<IntWritable, GW2Writable, IntWritable, GW2Writable> {
+    public static class GW2Reducer implements Reducer<IntWritable, GW2Writable, IntWritable, GW2Writable> {
+        // Minimum buy listings count, ensures item is in demand.
+        private int minBuyCount;
+
+        @Override
+        public void configure(JobConf jobConf) {
+            minBuyCount = jobConf.getInt(MIN_BUY_COUNT_CONF, 500);
+        }
+
         /** Additional filter for max profit with a certain number of buy listings. */
         @Override
-        public void reduce(IntWritable key, Iterable<GW2Writable> items, Context context) throws IOException, InterruptedException {
+        public void reduce(IntWritable intWritable, Iterator<GW2Writable> items, OutputCollector<IntWritable, GW2Writable> output, Reporter reporter) throws IOException {
             GW2Writable maxProfitItem = null;
             double maxProfit = 0;
 
-            for (GW2Writable item : items) {
+            while(items.hasNext()) {
+                GW2Writable item = items.next();
 
                 // With this reduce, want fast moving items that have demand at a set buy threshold.
-                if (item.getBuyCountInt() < MIN_BUY_COUNT) {
+                if (item.getBuyCountInt() < minBuyCount) {
                     continue;
                 }
 
@@ -72,11 +94,13 @@ public class GW2Job {
             // Profitable item in this margin
             if (maxProfitItem != null) {
                 // Truncation to int, simplifies data.
-                context.write(new IntWritable((int) maxProfit), maxProfitItem);
+                output.collect(new IntWritable((int) maxProfit), maxProfitItem);
             }
         }
-    }
 
+        @Override
+        public void close() throws IOException { }
+    }
 
     /**
      * Mapper categorizes by buy price because we are looking for items at each bracket.
@@ -88,15 +112,20 @@ public class GW2Job {
      *
      * Usage: hadoop jar target/golden-moa-1.0.jar GW2Job INPUT OUTPUT [--threshold THRESHOLD] [--minbuycount MINBUY]
      */
-    public static void main(String[] args) throws Exception {
-        Configuration config = new Configuration();
-        Job job = Job.getInstance(config, "GW2Job");
+    public int run(String[] args) throws Exception {
+        JobConf job = new JobConf(getConf(), GW2Job.class);
+        job.setJobName("GW2Job");
         job.setJarByClass(GW2Job.class);
+
         job.setMapperClass(GW2Mapper.class);
         job.setCombinerClass(GW2Reducer.class);
         job.setReducerClass(GW2Reducer.class);
+
         job.setOutputKeyClass(IntWritable.class);
         job.setOutputValueClass(GW2Writable.class);
+
+        job.setInputFormat(TextInputFormat.class);
+        job.setOutputFormat(TextOutputFormat.class);
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
@@ -107,11 +136,17 @@ public class GW2Job {
             for (int i = 2; i < args.length; i++) {
                 String arg = args[i];
                 if (arg.equals("--minbuycount")) {
-                    MIN_BUY_COUNT = Integer.valueOf(args[++i]);
+                    job.setInt(MIN_BUY_COUNT_CONF, Integer.valueOf(args[++i]));
                 }
             }
         }
 
-        job.waitForCompletion(true);
+        JobClient.runJob(job);
+        return 0;
+    }
+
+    public static void main(String[] args) throws Exception {
+        int res = ToolRunner.run(new Configuration(), new GW2Job(), args);
+        System.exit(res);
     }
 }
