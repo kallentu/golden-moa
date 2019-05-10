@@ -2,6 +2,16 @@
 
 This Hadoop MapReduce calculates the most profitable items to flip in GW2.
 
+**What GoldenMoa is used for**
+- Discovering less-known niches to invest your gold in.
+- Getting a good sense of what groups of items are more profitable.
+- Finding new items to attempt flipping.
+- Comparing your usual item profits with new markets.
+
+**What GoldenMoa is _not_ used for**
+- Guaranteeing that the generated dataset will earn you profit (the market _will_ change).
+- Blinding investing in all listed items in the dataset.
+
 ## Commands
 
 ### GW2SpidyMain
@@ -95,3 +105,20 @@ Result from `cat output/part-r-00000 | sort -n -k1 | head -n10`. These are lowes
 766    Name: Penetrating Krytan Greatsword of the Night Sell Price: 16300 Buy Price: 1600 Sell Count: 83 Buy Count: 594
 985    Name: Rejuvenating Steel Plated Inscription Sell Price: 5100 Buy Price: 2700 Sell Count: 785 Buy Count: 1310
 ```
+
+As an example of custom thresholds and arguments, this is a MapReduce using `--threshold 1000` and `--minbuycount 1000`.
+These results are also displayed using `cat output/part-r-00000 | sort -n -k1 | head -n10`, showing the lowest profit
+items with buckets of 10 silver and at least 1000 buy listings.
+
+```
+5439    Name: Hearty Intricate Cotton Insignia Sell Price: 8000 Buy Price: 5000 Sell Count: 143 Buy Count: 1361
+9841    Name: Mini Infinirarium Sell Price: 13000 Buy Price: 12000 Sell Count: 525 Buy Count: 1209
+13693    Name: Oiled Orichalcum Helmet Casing Sell Price: 18000 Buy Price: 13000 Sell Count: 249 Buy Count: 1607
+16680    Name: Mini Captain Magnus Sell Price: 21000 Buy Price: 16000 Sell Count: 559 Buy Count: 1170
+17152    Name: Endless Blue Quaggan Tonic Sell Price: 23000 Buy Price: 19000 Sell Count: 528 Buy Count: 2398
+17173    Name: Feast of Truffle Steak Dinner Sell Price: 22000 Buy Price: 17000 Sell Count: 602 Buy Count: 1527
+24623    Name: Soldier's Benthic Waterbreather of the Afflicted Sell Price: 31000 Buy Price: 29000 Sell Count: 421 Buy Count: 1727
+33016    Name: Carbonized Mithrillium Ingot Sell Price: 41000 Buy Price: 36000 Sell Count: 685 Buy Count: 1834
+33173    Name: Mini Undead Chicken Sell Price: 41000 Buy Price: 30000 Sell Count: 334 Buy Count: 1677
+98019    Name: 20 Slot Gossamer Bag Sell Price: 117000 Buy Price: 100000 Sell Count: 1444 Buy Count: 1431
+``` 
